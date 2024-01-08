@@ -125,11 +125,25 @@ jobs:
             cd -
           done
 
-      - name: Print integrity hashes
+      - name: Collect integrity hashes
+        id: collectIntegrity
         if: ${{ !inputs.dryRun }}
         run: |
-          packages=("@${{ inputs.npmOrgName }}/backstage-plugin-orchestrator-common" "@${{ inputs.npmOrgName }}/backstage-plugin-orchestrator" "@${{ inputs.npmOrgName }}/backstage-plugin-orchestrator-backend" "@${{ inputs.npmOrgName }}/backstage-plugin-orchestrator-backend-dynamic")
-          for package in "${packages[@]}"; do
-            integrity=$(curl -s https://registry.npmjs.org/$package | jq -r ".versions[\"${{ inputs.version }}\"].dist.integrity")
-            echo "Integrity hash for $package@${{ inputs.version }}: $integrity"
-          done
+          package="@${{ inputs.npmOrgName }}/backstage-plugin-orchestrator"
+          integrity=$(curl -s https://registry.npmjs.org/$package | jq -r ".versions[\"${{ inputs.version }}\"].dist.integrity")
+          echo "backstage-plugin-orchestrator=$integrity" >> $GITHUB_OUTPUT
+
+          package="@${{ inputs.npmOrgName }}/backstage-plugin-orchestrator-backend-dynamic"
+          integrity=$(curl -s https://registry.npmjs.org/$package | jq -r ".versions[\"${{ inputs.version }}\"].dist.integrity")
+          echo "backstage-plugin-orchestrator-backend-dynamic=$integrity" >> $GITHUB_OUTPUT
+
+      - name: Publish the release on GitHub
+        if: ${{ !inputs.dryRun }}
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ inputs.version }}
+          name: ${{ inputs.version }}
+          makeLatest: true
+          body: |
+            @${{ inputs.npmOrgName }}/backstage-plugin-orchestrator (`${{ steps.collectIntegrity.outputs.backstage-plugin-orchestrator }}`)
+            @${{ inputs.npmOrgName }}/backstage-plugin-orchestrator-backend-dynamic (`${{ steps.collectIntegrity.outputs.backstage-plugin-orchestrator-backend-dynamic }}`)
