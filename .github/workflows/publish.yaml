@@ -155,5 +155,5 @@ jobs:
             ### Commit from `${{ inputs.githubOrgName }}/backstage-plugins @ ${{ inputs.githubRefName }}`
             `${{ steps.get_commit_hash.outputs.commit_hash }}`
             ### Packages
-            @${{ inputs.npmOrgName }}/backstage-plugin-orchestrator (`${{ steps.collect_integrity.outputs.backstage_plugin_orchestrator }}`)
-            @${{ inputs.npmOrgName }}/backstage-plugin-orchestrator-backend-dynamic (`${{ steps.collect_integrity.outputs.backstage_plugin_orchestrator_backend_dynamic }}`)
+            - @${{ inputs.npmOrgName }}/backstage-plugin-orchestrator (`${{ steps.collect_integrity.outputs.backstage_plugin_orchestrator }}`)
+            - @${{ inputs.npmOrgName }}/backstage-plugin-orchestrator-backend-dynamic (`${{ steps.collect_integrity.outputs.backstage_plugin_orchestrator_backend_dynamic }}`)
